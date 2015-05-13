@@ -1712,15 +1712,18 @@ SOKP_TARGET_PACKAGE := $(PRODUCT_OUT)/$(SOKP_MOD_VERSION).zip
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
 bacon: otapackage
 	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(SOKP_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(SOKP_TARGET_PACKAGE) > $(SOKP_TARGET_PACKAGE).md5sum
-	@echo -e ${CL_CYN}"Package Complete: $(SOKP_TARGET_PACKAGE)"${CL_RST}
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(SOKP_TARGET_PACKAGE)
+ifdef FINISHER_SCRIPT
+	@echo -e ${CL_YLW}"Running finisher..."${CL_RST}
+	$(hide) $(FINISHER_SCRIPT) $@
+endif
 
 bootzip: bootimage
 	$(BOOT_ZIP_FROM_IMAGE_SCRIPT) \
 	   $(recovery_fstab) \
 	   $(OUT) \
 	   $(TARGET_DEVICE)
-
+	
 endif    # recovery_fstab is defined
 endif    # TARGET_NO_KERNEL != true
 endif    # TARGET_DEVICE != generic*
