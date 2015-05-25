@@ -78,7 +78,7 @@ $(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/iself)
 $(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/lsd)
 $(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/apriori)
 $(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/isprelinked)
-$(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/soslim)
+$(call add-clean-step, rm -rf $(HOST_OUT_EXECUTABLES)/sosokp)
 
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/obj/lib/*.so)
 $(call add-clean-step, rm -rf $(PRODUCT_OUT)/system/lib/*.so)

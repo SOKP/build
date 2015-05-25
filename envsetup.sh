@@ -18,7 +18,7 @@ export HMM_DESCRIPTIVE=(
 "resgrep: Greps on all local res/*.xml files."
 "sgrep:   Greps on all local source files."
 "godir:   Go to the directory containing a file."
-"slimremote: Add a git remote for matching SLIM repository"
+"sokpremote: Add a git remote for matching SOKP repository"
 "cmremote: Add a git remote for matching CM repository"
 "aospremote: Add git remote for matching AOSP repository"
 "cafremote: Add git remote for matching CodeAurora repository."
@@ -79,13 +79,13 @@ function check_product()
         return
     fi
 
-    if (echo -n $1 | grep -q -e "^slim_") ; then
-       SLIM_BUILD=$(echo -n $1 | sed -e 's/^slim_//g')
-       export BUILD_NUMBER=$( (date +%s%N ; echo $SLIM_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
+    if (echo -n $1 | grep -q -e "^sokp_") ; then
+       SOKP_BUILD=$(echo -n $1 | sed -e 's/^sokp_//g')
+       export BUILD_NUMBER=$( (date +%s%N ; echo $SOKP_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10)
     else
-       SLIM_BUILD=
+       SOKP_BUILD=
     fi
-    export SLIM_BUILD
+    export SOKP_BUILD
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
@@ -501,7 +501,7 @@ function print_lunch_menu()
        echo "  (ohai, koush!)"
     fi
     echo
-    if [ "z${SLIM_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${SOKP_DEVICES_ONLY}" != "z" ]; then
        echo "Breakfast menu... pick a combo:"
     else
        echo "Lunch menu... pick a combo:"
@@ -515,7 +515,7 @@ function print_lunch_menu()
         i=$(($i+1))
     done | column
 
-    if [ "z${SLIM_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${SOKP_DEVICES_ONLY}" != "z" ]; then
        echo "... and don't forget the bacon!"
     fi
 
@@ -538,10 +538,10 @@ function breakfast()
 {
     target=$1
     local variant=$2
-    SLIM_DEVICES_ONLY="true"
+    SOKp_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/slim/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/sokp/vendorsetup.sh 2> /dev/null`
         do
             echo "including $f"
             . $f
@@ -561,7 +561,7 @@ function breakfast()
             if [ -z "$variant" ]; then
                 variant="userdebug"
             fi
-            lunch slim_$target-$variant
+            lunch sokp_$target-$variant
         fi
     fi
     return $?
@@ -611,7 +611,7 @@ function lunch()
     check_product $product
     if [ $? -ne 0 ]
     then
-        # if we can't find a product, try to grab it off the SLIM github
+        # if we can't find a product, try to grab it off the SOKP github
         T=$(gettop)
         pushd $T > /dev/null
         build/tools/roomservice.py $product
@@ -723,7 +723,7 @@ function tapas()
 function eat()
 {
     if [ "$OUT" ] ; then
-        MODVERSION=$(get_build_var SLIM_VERSION)
+        MODVERSION=$(get_build_var SOKP_VERSION)
         ZIPFILE=$MODVERSION.zip
         ZIPPATH=$OUT/$ZIPFILE
         if [ ! -f $ZIPPATH ] ; then
@@ -739,7 +739,7 @@ function eat()
             done
             echo "Device Found.."
         fi
-    if (adb shell cat /system/build.prop | grep -q "ro.slim.device=$SLIM_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.sokp.device=$SOKP_BUILD");
     then
         # if adbd isn't root we can't write to /cache/recovery/
         adb root
@@ -761,7 +761,7 @@ EOF
     fi
     return $?
     else
-        echo "The connected device does not appear to be $SLIM_BUILD, run away!"
+        echo "The connected device does not appear to be $SOKP_BUILD, run away!"
     fi
 }
 
@@ -1927,7 +1927,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell cat /system/build.prop | grep -q "ro.slim.device=$SLIM_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.sokp.device=$SOKP_BUILD");
     then
         adb push $OUT/boot.img /cache/
         for i in $OUT/system/lib/modules/*;
@@ -1938,7 +1938,7 @@ function installboot()
         adb shell chmod 644 /system/lib/modules/*
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $SLIM_BUILD, run away!"
+        echo "The connected device does not appear to be $SOKP_BUILD, run away!"
     fi
 }
 
@@ -1972,13 +1972,13 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 >> /dev/null
     adb wait-for-online remount
-    if (adb shell cat /system/build.prop | grep -q "ro.slim.device=$SLIM_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.sokp.device=$SOKP_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $SLIM_BUILD, run away!"
+        echo "The connected device does not appear to be $SOKP_BUILD, run away!"
     fi
 }
 
@@ -2049,7 +2049,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell cat /system/build.prop | grep -q "ro.slim.device=$SLIM_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.sokp.device=$SOKP_BUILD");
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+[^0-9]+' \
@@ -2152,7 +2152,7 @@ EOF
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $SLIM_BUILD, run away!"
+        echo "The connected device does not appear to be $SOKP_BUILD, run away!"
     fi
 }
 
@@ -2169,7 +2169,7 @@ function repopick() {
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $SLIM_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $SOKP_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
