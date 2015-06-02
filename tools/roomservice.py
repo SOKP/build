@@ -46,7 +46,7 @@ default_manifest = ".repo/manifest.xml"
 custom_local_manifest = ".repo/local_manifests/sokp_manifest.xml"
 custom_default_revision = "sokp-l5.1"
 custom_dependencies = "sokp.dependencies"
-org_manifest = "SOKP"  # leave empty if org is provided in manifest
+org_manifest = ""  # leave empty if org is provided in manifest
 org_display = "SOKP"  # needed for displaying
 
 github_auth = None
